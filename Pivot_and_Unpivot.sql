@@ -1,3 +1,38 @@
+--UNPIVOT
+-- 형식
+SELECT *
+    FROM ( 피벗 대상 쿼리문 )
+ UNPIVOT ( 컬럼별칭(값) FOR 컬럼별칭(열) IN (피벗열명 AS '별칭', ... )
+
+-- 복수개 Unpivot 형식
+SELECT * FROM sale_stats
+UNPIVOT (
+    (quantity, amount)
+    FOR product_code
+    IN (
+	        (a_qty, a_value) AS 'A',
+        (b_qty, b_value) AS 'B'
+    )
+);
+
+-- 예제
+WITH temp AS (
+    SELECT 1 AS col1, 2 AS col2, 3 AS col3 FROM dual
+)
+
+ SELECT col_nm
+      , col_val
+   FROM (
+          SELECT *
+            FROM temp
+        )
+UNPIVOT (col_val  -- unpivot_clause
+         FOR col_nm  -- unpivot_for_clause
+         IN (col1, col2, col3)); -- unpivot_in_clause
+
+----------------------------------------------------
+--Practice
+
 CREATE TABLE stage_table(
     id INT PRIMARY KEY,
     Stage VARCHAR2(20),
