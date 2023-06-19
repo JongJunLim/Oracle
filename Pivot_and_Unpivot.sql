@@ -91,6 +91,31 @@ UNPIVOT( (End_Actual, End_Plan) -- unpivot_clause
     )
 );  
 
+-- 2개 UNPIVOT + UNION ALL
+SELECT ID, Stage, End_Actual, End_Plan, 'Phase1' TB_NAME 
+ FROM (SELECT id, Stage1_Actual, Stage2_Actual, Stage3_Actual, Stage1_Plan, Stage2_Plan, Stage3_Plan FROM stage_table)
+UNPIVOT( (End_Actual, End_Plan) -- unpivot_clause
+         FOR Stage -- unpivot_for_clause
+         IN ( -- unpivot_in_clause
+             (Stage1_Actual, Stage1_Plan) AS 'Stage1',
+             (Stage2_Actual, Stage2_Plan) AS 'Stage2',
+             (Stage3_Actual, Stage3_Plan) AS 'Stage3'
+    )
+)
+
+UNION ALL
+
+SELECT ID, Stage, End_Actual, End_Plan, 'Phase2' TB_NAME 
+ FROM (SELECT id, Stage1_Actual, Stage2_Actual, Stage3_Actual, Stage1_Plan, Stage2_Plan, Stage3_Plan FROM stage_table)
+UNPIVOT( (End_Actual, End_Plan) -- unpivot_clause
+         FOR Stage -- unpivot_for_clause
+         IN ( -- unpivot_in_clause
+             (Stage1_Actual, Stage1_Plan) AS 'Stage1',
+             (Stage2_Actual, Stage2_Plan) AS 'Stage2',
+             (Stage3_Actual, Stage3_Plan) AS 'Stage3'
+    )
+)
+; 
 
 -- 테이블 제거 
 -- DROP TABLE stage_table;
