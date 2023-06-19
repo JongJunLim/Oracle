@@ -21,7 +21,7 @@ VALUES(1
 
 INSERT INTO stage_table(id, stage, Stage1_Actual, Stage1_Plan, Stage2_Actual, Stage2_Plan, Stage3_Actual, Stage3_PLAN)
 VALUES(2
-       ,'PVT'
+       ,'Stage3'
        , TO_DATE('2023-05-02', 'yyyy-mm-dd')
        , TO_DATE('2023-05-05', 'yyyy-mm-dd')
        ,TO_DATE('2023-05-10', 'yyyy-mm-dd')
