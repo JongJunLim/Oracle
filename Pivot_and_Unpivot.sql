@@ -95,7 +95,7 @@ UNPIVOT( (End_Actual, End_Plan) -- unpivot_clause
 -- 테이블 제거 
 -- DROP TABLE stage_table;
 
-
+--PIVOT
 SELECT job, HIREDATE
  FROM emp;
 
