@@ -1,4 +1,3 @@
-
 SELECT Col1, Col2, ...
 	FROM 테이블/인라인 뷰
    PIVOT (aggregate_funtsion(arg) [, aggregate_function(arg2),...]
