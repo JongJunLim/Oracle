@@ -1,10 +1,3 @@
-SELECT Col1, Col2, ...
-	FROM 테이블/인라인 뷰
-   PIVOT (aggregate_funtsion(arg) [, aggregate_function(arg2),...]
-   		FOR Col1 [,Col2, ...]
-		 IN (값1 [, 값2,...)
-		 );
-
 SELECT *
 	FROM (SELECT a.DEPTNO, a.SAL FROM EMP a) a
 	PIVOT (sum(a.SAL)
