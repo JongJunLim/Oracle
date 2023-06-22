@@ -1,4 +1,3 @@
-
 -- PIVOT 절
 -- Oracle 11g 버전부터 사용 가능
 -- FROM 절과 WHERE 절 사이에 기술한다.
