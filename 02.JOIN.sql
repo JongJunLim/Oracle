@@ -91,12 +91,58 @@ SELECT A.컬럼, B.컬럼, ...
     -- WHERE 절에 비기준 집합에 대한 일반 조건을 기술하면 INNER JOIN이 수행된다. (ON 절 안에 일반 조건 넣어주면 FULL OUTER 수행 됨)
 
   -- JOIN 실습
+--1. 10번 부서에 속하는 모든 사원의 직무와 부서 위치를 표시하시요.
+SELECT A.JOB, A.ENAME, B.DNAME, B.LOC
+	FROM EMP A, DEPT B
+   WHERE A.DEPTNO = 10
+     AND A.DEPTNO = B.DEPTNO;
+  
+--2. "CHICAGO"에서 근무하는 모든 사원의 이름, 직무, 부서 번호 및 부서 이름을 표시하십시오.
+SELECT A.ENAME, A.JOB, A.DEPTNO, B.DNAME
+	FROM EMP A,DEPT B
+   WHERE B.LOC = 'CHICAGO'
+     AND A.DEPTNO = b.DEPTNO;
 
+--3. 각 사원의 이름 및 사원 번호를 해당 관리자의 이름 및 사원 번호와 함께 표시하고, 레이블을 순서대로 EMP_NM, EMP#, MGR_NM, MGR#로 지정하오. (단, 관리자가 없는 사원은 포함하지 않는다.)
+SELECT A.ENAME  AS EMP_NM
+      ,A.EMPNO  AS EMP#
+      ,B.ENAME  AS MGR_NM
+      ,B.EMPNO  AS MGR#
+	FROM EMP A -- 사원 
+        ,EMP B -- 관리자 
+   WHERE A.MGR = B.EMPNO ;     
+    
+    
+--4. 각 사원 이름 미 사원 번호를 해당 관리자의 이름 및 사원 번호와 함께 표시하고 레이블 순서대로 EMP_NM, EMP#, MGR_NM, MGR#로 지정하오. 
+--(단, 관리자가 없는 사원도 포함하여 표시하고, 결과 집합은 사원 번호(EMP#)기준으로 정렬하시오.
+SELECT A.ENAME  AS EMP_NM
+      ,A.EMPNO  AS EMP#
+      ,B.ENAME  AS MGR_NM
+      ,B.EMPNO  AS MGR#
+	FROM EMP A -- 사원 
+        ,EMP B -- 관리자 
+   WHERE A.MGR = B.EMPNO(+) 
+   ORDER BY A.EMPNO;  
+  
+--5."Marting"과 같은 부서의 사원을 표시하고, 레이블을 순서대로 ENAME, DEPTNO, ENAME_1로 지정하시오.
+SELECT A.ENAME  AS ENAME
+      ,B.DEPTNO AS DEPTNO
+      ,B.ENAME  AS ENAME_1 
+	FROM EMP A  -- MARTIN
+	    ,EMP B  -- MARTIN 과 동일 부서 사원 
+   WHERE A.EMPNO = '7654'
+     AND A.DEPTNO = B.DEPTNO
+     AND B.EMPNO  <> A.EMPNO; --  OR B.ENAME <> 'MARTIN'
 
-
-
-
-
+--6."CLARK" 사원보다 늦게 입사한 사원의 이름 입사 일자를 표시하시오.
+SELECT MAX(B.ENAME)    AS ENAME
+      ,MIN(B.HIREDATE) AS HIREDATE
+	FROM EMP A -- CLARK
+	    ,EMP B -- CLARK 보다 늦게 입사한 사
+   WHERE A.ENAME = 'CLARK'
+     AND A.HIREDATE < B.HIREDATE
+	 AND B.ENAME <> 'CLARK'
+	 GROUP BY B.EMPNO;   -- 동명이인이 있을경우를 위해 GROUP BY와, MIN, MAX 활용 
 
   -- Self Join 실습
     --1.
