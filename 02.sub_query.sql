@@ -53,7 +53,8 @@ SELECT a.empno AS mgr_no
                FROM emp a
                   , dept b
               WHERE a.deptno = b.deptno;
--- 3.중첩 서브쿼리(Nested-Subquery) : SELECT 절에 사용되며 단읽 값을 리턴하는 서브쿼리
+
+-- 3.중첩 서브쿼리
 	-- 비상관 서브 쿼리(Uncorrelated Subquery)
     	-- 메인 쿼리의 컬럼을 참조하지 않는 서브쿼리이다.
         -- 메인 쿼리의 각 행을 평가할 때 서브 쿼리의 결과가 달라지지 않는다.
@@ -63,8 +64,8 @@ SELECT a.empno AS mgr_no
              -- 다중 행 비상관 서브 쿼리
              	-- 서브쿼리가 다중 행을 리턴하는 비상관 쿼리이다. 
              	-- 다중 값 비교 조건인 IN 조건 또는 SOME/ANY(ANY를 SOME보다 많이 사용, MIN으로 대체 가능), ALL(MAX로 대채 가능) 조건 등과 함께 사용된다. 
-              -- EXIST 조건과 상관 서브쿼리로 재작성할 수 있다.
-              -- NOT IN 조건과 서브 쿼리를 사용할 때 서브쿼리의 결과에 NULL이 포함된 경우, 결과 집합이 공집합 (0)건이 될 수 있으므로 주의해야한다.
+                -- EXIST 조건과 상관 서브쿼리로 재작성할 수 있다.
+                -- NOT IN 조건과 서브 쿼리를 사용할 때 서브쿼리의 결과에 NULL이 포함된 경우, 결과 집합이 공집합 (0)건이 될 수 있으므로 주의해야한다.
 SELECT a.empno
      , a.ename
      , a.deptno
@@ -77,7 +78,13 @@ SELECT a.empno
                       FROM emp aa
                      WHERE aa.job = 'MANAGER')
  ORDER BY a.deptno;
- 
+
+	-- 상관 서브쿼리(Correlated Subquery)
+		-- 상관 서브쿼리는 메인 쿼리의 칼럼을 참조하여 수행되는 서브쿼리이다.
+		-- 메인 쿼리의 각 행을 평가할 때마다 서브 쿼리의 결과가 달라질 수 있다.
+			-- EXIST 조건과 상관 서브쿼리 (NOT EXIST는 반대 로직) 
+				-- EXIST 조건은 각 행마다 수행된 서브 쿼리의 결과가 1건 이상이면 TRUE로 평가된다.
+				-- 서브 쿼리에서 조건을 만족하는 행이 1건만 리턴되면 서브쿼리 실행을 멈추고 TRUE를 리턴한다. 
 SELECT a.empno
      , a.ename
      , a.deptno
@@ -98,6 +105,10 @@ SELECT a.empno
      , a.sal
   FROM emp a
  WHERE a.job IN ('MANAGER', 'SALESMAN')
+   AND a.sal >= (SELECT ROUND(AVG(aa.sal))
+                   FROM emp aa
+                  WHERE aa.job = a.job)
+ ORDER BY a.job, a.empno;
    AND a.sal >= (SELECT ROUND(AVG(aa.sal))
                    FROM emp aa
                   WHERE aa.job = a.job)
