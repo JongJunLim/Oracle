@@ -30,7 +30,7 @@ SELECT e.job
 			-- 중복된 행 제거 하지 않음(UNION ALL 
 			-- 중복된 행을 제거함(UNION)
 	-- 교집합(INTERSECT) / 차집합(MINUS)
-	-- 집합 연산자는 위에서 아래 순으로 실행이 되지만, 괄호를 이용하여 우선 순위를 변경할 수 있
+	-- 집합 연산자는 위에서 아래 순으로 실행이 되지만, 괄호를 이용하여 우선 순위를 변경할 수 있음
 SELECT d.DEPTNO
 	FROM DEPT d                   -- 1
 MINUS
