@@ -1,4 +1,10 @@
--- 1.스칼라 서브쿼리 : WHERE 절이나 HAVING 절에 조건으로 사용되는 쿼리
+-- 1.스칼라 서브쿼리
+ 	-- SELECT 절에 사용되며 단일 값을 리턴하는 서브쿼리
+ 		-- 메인 쿼리 집합의 각 행마다 실행되어 단일 값(1row, 1column)을 리턴하는 상관 서브쿼리
+ 		-- 메인 쿼리 집합의 결과 건수는 스칼라 서브쿼리에 의해 변경되지 않는다.
+ 		-- 서브 쿼리의 결과가 단일 행값이 아니면 에러가 발생한다. (2개 이상인 경우 집계 함수를 사용하여 집계 값을 구한다)
+ 		-- 열이 2개 이상인 경우, 각각의 스칼라 서브 쿼리로 나눠 사용한다.
+ 		-- 스칼라 서브 쿼리를 과다하게 남용하면 성능이 느려짐 
  SELECT a.empno
      , a.ename
      , a.deptno
@@ -31,7 +37,8 @@ SELECT a.deptno
             THEN 'Y' END AS manager_yn
   FROM dept a;
   
- -- 2.인라인 뷰 : FROM 절에 조회 대상 집합으로 사용되는 서브 쿼리
+ -- 2.인라인 뷰
+ 	-- FROM 절에서 조회 대상 집합으로 사용되는 서브 쿼리이다.
  SELECT a.empno
      , a.ename
      , a.job
@@ -53,6 +60,14 @@ SELECT a.empno AS mgr_no
                FROM emp a
                   , dept b
               WHERE a.deptno = b.deptno;
+             
+	--VIEW
+		-- 쿼리를 데이터 베이스에 저장하여 테이블 처럼 사용할 수 있는 오브젝트이다.
+CREATE OR REPLACE VIEW VIE_DEPT_SUM AS
+...
+
+	--WITH 절
+		-- 서브 쿼리에 이름을 할당하고, 메인 쿼리에서 참조할 수 있다.
 
 -- 3.중첩 서브쿼리
 	-- 비상관 서브 쿼리(Uncorrelated Subquery)
