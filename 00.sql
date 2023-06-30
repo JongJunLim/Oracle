@@ -103,3 +103,43 @@ SELECT *
 	      IN (20 AS D20
 	         ,30 AS D30)
 	      );      
+
+-- 집계 함수를 사용하지 않으면 오류 발
+SELECT *
+	FROM (SELECT a.job
+	            ,a.deptno
+	            ,a.sal 
+	       FROM emp a
+	     ) a
+	PIVOT ( a.sal
+	     FOR deptno
+	      IN (20 AS D20
+	         ,30 AS D30)
+	      );  	       
+	       
+-- 참조하는 컬럼을 select 절에 직접 기술하면 오류 발
+SELECT job, deptno, sal, d20_sumsal, d30_sumsal
+	FROM (SELECT a.job
+	            ,a.deptno
+	            ,a.sal 
+	       FROM emp a) a
+	PIVOT ( SUM(a.sal) AS SUMSAL
+	     FOR deptno
+	      IN (20 AS D20
+	         ,30 AS D30)
+	      );       
+	     
+	     
+SELECT job, HIREDATE
+ FROM emp;
+
+SELECT * 
+  FROM ( 
+         SELECT job , TO_CHAR(hiredate, 'FMMM') || '월' hire_month 
+           FROM emp 
+       ) 
+ PIVOT (
+         COUNT(*) 
+         FOR hire_month IN ('1월', '2월', '3월', '4월', '5월', '6월',
+                            '7월', '8월', '9월', '10월', '11월', '12월') 
+       );
