@@ -246,25 +246,4 @@ WITH W_PIVOT AS
 	    	 )
 	)     		  
    	SELECT *
-   	  FROM W_PIVOT;
-	
-WITH W_PIVOT AS
-	(SELECT JOB, D10_SUMSAL, D10_CNT, D30_SUMSAL, D30_CNT
-	   FROM (SELECT a.job
-	   			   ,a.deptno
-	   			   ,a.sal
-	   		   FROM emp a ) a 
-	   PIVOT (SUM(a.sal) AS SUMSAL
-	         ,COUNT(*) AS CNT
-	    	FOR deptno
-	    	 IN (10 AS D10
-	    	    ,30 AS D30)
-	    	 )
-	)     		  
-   	SELECT *
-   	  FROM W_PIVOT 
-   	  	UNPIVOT ((SUMSAL, CNT) 
-   	  		FOR DEPNO
-   	  		 IN ((D10_SUMSAL, D10_CNT) AS 10
-   	  		    ,(D30_SUMSAL, D30_CNT) AS 30)
-   	  		    );   
+   	  FROM W_PIVOT; 
