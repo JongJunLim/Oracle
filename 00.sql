@@ -143,3 +143,38 @@ SELECT *
          FOR hire_month IN ('1월', '2월', '3월', '4월', '5월', '6월',
                             '7월', '8월', '9월', '10월', '11월', '12월') 
        );
+
+-- UNPIVOT 절
+-- FROM 절과 WHERE 절 사이에 기술한다.
+	-- UNPIVOT 컬럼에 UNPIVOT된 값이 출력될 컬럼을 지정한다.
+	-- FOR 절에는 구분자 값이 출력될 컬럼을 지정한다.
+	-- IN 절에는 UNPIVOT 대상 컬럼과 구분자 값을 지정
+
+
+SELECT Col1, Col2, ...
+	FROM 테이블/인라인 뷰
+ UNPIVOT [INCLUDE | EXCLUDE NULL]
+   		FOR Col1 [,Col2, ...]
+		 IN (컬럼1 AS 값1 [,컬럼2 AS 값2,...])
+		 )
+   WHERE 조건;
+  
+  
+-- 행 복제(Cross Join, 카타시안 곱)을 활용한 UNPIVOT 구현
+WITH W_PIVOT AS
+	(SELECT D10_SUMSAL
+	       ,D20_SUMSAL
+	       ,D30_SUMSAL
+	   FROM (SELECT a.deptno
+	   			   ,a.sal
+	   		   FROM emp a
+	   		) a 
+	   PIVOT (SUM(a.sal) AS SUMSAL
+	    	FOR deptno
+	    	 IN (10 AS D10
+	    	    ,20 AS D20
+	    	    ,30 AS D30)
+	    	 )
+	)
+	SELECT *
+      FROM W_PIVOT;
