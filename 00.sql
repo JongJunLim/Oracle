@@ -35,3 +35,71 @@ SELECT *
 		    ,30
 		    )
 		  );
+
+		
+-- IN 절에 지정한 값에 대해서만 PIVOT을 수행한다.
+-- 집계 함수와 IN 절에 별칭(Alias)을 지정할 수 있다.
+	-- IN 절에 지정한 별칭 ||'ㅡ'|| 집계 함수에 지정한 별칭으로 최종 결과 열의 Label이 지정된다.
+SELECT job, D10_SUMSAL, D30_SUMSAL
+	FROM (SELECT a.job
+			    ,a.DEPTNO
+			    ,a.SAL
+		    FROM EMP a
+		 ) a
+	PIVOT (sum(a.SAL) AS SUMSAL
+		FOR deptno 
+	 	 IN (10 AS D10
+	 	    ,30 AS D30
+	 	    )
+	      );			
+	
+-- 집계 함수와 IN 절 둘 중 하나에만 별칭을 지정하는 것도 가능하다.
+	-- 집계함수와 IN절 모두에 별칭을 지정하는 것이 좋다.	
+
+-- 여러 개의 집계 함수를 사용하여 PIVOT을 수행할 수 있다.
+	-- PIVOT에 의해 집계 함수의 개수*IN 절 값의 개수 만큼 결과 열이 출력된다
+SELECT *
+	FROM (SELECT a.job
+			    ,a.DEPTNO
+			    ,a.SAL 
+		   FROM EMP a
+		 ) a
+	PIVOT (sum(a.SAL) AS SUMSAL
+		  ,count(*) AS CNT
+		FOR deptno 
+	 	 IN (10 AS D10
+	 	    ,20 AS D20
+	 	    ,30 AS D30
+	 	    )
+	      );			
+	
+--집계함수를 2개 이상 사용하였을 때,별칭을 지정하지 않으면 문법 오류가 발생한다.
+	--PIVOT 절 사용시 집계 함수와 IN 절 모두에 별칭을 지정하는 것이 좋다.
+	--올바른 사용 예시
+SELECT *
+	FROM (SELECT a.job
+	            ,a.deptno
+	            ,a.sal 
+	       FROM emp a
+	     ) a
+	PIVOT ( SUM(a.sal) AS SUMSAL
+	       ,COUNT(*) AS CNT
+	     FOR deptno
+	      IN (20 AS D20
+	         ,30 AS D30
+	         )
+	      );
+	     
+	 --오류 발생 예시
+SELECT *
+	FROM (SELECT a.job
+	            ,a.deptno
+	            ,a.sal 
+	       FROM emp a
+	     ) a
+	PIVOT (SUM(a.sal)
+	      ,COUNT(*)
+	     FOR deptno
+	      IN (20 AS D20
+	         ,30 AS D30)
+	      );      
