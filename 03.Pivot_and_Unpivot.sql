@@ -8,7 +8,7 @@ SELECT Col1, Col2, ...
 	FROM 테이블/인라인 뷰
    PIVOT (aggregate_funtsion(arg) [, aggregate_function(arg2),...]
    		FOR Col1 [,Col2, ...]
-		 IN (값1 [, 값2,...)
+		  IN (값1 [, 값2,...)
 		 );
 
 SELECT *
@@ -35,6 +35,7 @@ SELECT *
 		    ,30
 		    )
 		  );
+
 		
 -- IN 절에 지정한 값에 대해서만 PIVOT을 수행한다.
 -- 집계 함수와 IN 절에 별칭(Alias)을 지정할 수 있다.
@@ -142,7 +143,6 @@ SELECT *
          FOR hire_month IN ('1월', '2월', '3월', '4월', '5월', '6월',
                             '7월', '8월', '9월', '10월', '11월', '12월') 
        );
-	
 
 -- UNPIVOT 절
 -- FROM 절과 WHERE 절 사이에 기술한다.
@@ -178,31 +178,12 @@ WITH W_PIVOT AS
 	)
 	SELECT *
       FROM W_PIVOT;
-  
-WITH W_PIVOT AS
-	(SELECT D10_SUMSAL, D20_SUMSAL, D30_SUMSAL
-	   FROM (SELECT a.deptno
-	   			   ,a.sal
-	   		   FROM emp a 
-	   		) a 
-	   PIVOT (SUM(a.sal) AS SUMSAL
-	    	FOR deptno
-	    	 IN (10 AS D10
-	    	 	,20 AS D20
-	    	 	,30 AS D30)
-	    	 )
-	)  
-	SELECT CASE WHEN b.lv = 1 THEN 10
-		        WHEN b.lv = 2 THEN 20
-		        WHEN b.lv = 3 THEN 30
-		    END AS DEPTNO
-	      ,CASE WHEN b.lv = 1 THEN a.D10_SUMSAL
-	            WHEN b.lv = 2 THEN a.D20_SUMSAL
-	            WHEN b.lv = 3 THEN a.D30_SUMSAL
-	        END AS SUMSAL
-      FROM W_PIVOT a
-          ,(SELECT LEVEL AS LV 
-      	      FROM DUAL CONNECT BY LEVEL <= 3 ) b;
+
+
+
+
+
+
 	
 
 -- UNPIVOT 절을 기존 행수 * IN 절에 지정한 컬럼 수만큼 행을 복제한다.
