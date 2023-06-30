@@ -178,3 +178,214 @@ WITH W_PIVOT AS
 	)
 	SELECT *
       FROM W_PIVOT;
+
+
+
+
+
+
+	
+
+-- UNPIVOT 절을 기존 행수 * IN 절에 지정한 컬럼 수만큼 행을 복제한다.
+ 	-- 단, NULL 값은 결과에서 제외(EXCLUDE  NUL)된다.
+	-- UNPIVOT 절에 INCLUDE NULL 키워드를 기술하면 NULL 값도 결과에 포함된다.
+WITH W_PIVOT AS
+	(SELECT JOB, D10_SUMSAL, D20_SUMSAL, D30_SUMSAL
+	   FROM (SELECT a.job
+	   			   ,a.deptno
+	   			   ,a.sal
+	   		   FROM emp a ) a 
+	   PIVOT (SUM(a.sal) AS SUMSAL
+	    	FOR deptno
+	    	 IN (10 AS D10
+	    	    ,20 AS D20
+	    	    ,30 AS D30)
+	    	 )
+	)  
+
+	SELECT *
+ 	  FROM W_PIVOT
+   UNPIVOT INCLUDE NULLS
+   		   (SUMSAL 
+   		   FOR DEPNO IN (D10_SUMSAL AS 10
+   		                ,D20_SUMSAL AS 20
+   		                ,D30_SUMSAL AS 30)
+   		   );                     
+
+-- 다중 컬럼 UNPIVOT 예시 
+WITH W_PIVOT AS
+	(SELECT JOB, D10_SUMSAL, D10_CNT, D30_SUMSAL, D30_CNT
+	   FROM (SELECT a.job
+	   			   ,a.deptno
+	   			   ,a.sal
+	   		   FROM emp a ) a 
+	   PIVOT (SUM(a.sal) AS SUMSAL
+	         ,COUNT(*) AS CNT
+	    	FOR deptno
+	    	 IN (10 AS D10
+	    	    ,30 AS D30)
+	    	 )
+	)     		  
+   	SELECT *
+   	  FROM W_PIVOT;
+	
+WITH W_PIVOT AS
+	(SELECT JOB, D10_SUMSAL, D10_CNT, D30_SUMSAL, D30_CNT
+	   FROM (SELECT a.job
+	   			   ,a.deptno
+	   			   ,a.sal
+	   		   FROM emp a ) a 
+	   PIVOT (SUM(a.sal) AS SUMSAL
+	         ,COUNT(*) AS CNT
+	    	FOR deptno
+	    	 IN (10 AS D10
+	    	    ,30 AS D30)
+	    	 )
+	)     		  
+   	SELECT *
+   	  FROM W_PIVOT 
+   	  	UNPIVOT ((SUMSAL, CNT) 
+   	  		FOR DEPNO
+   	  		 IN ((D10_SUMSAL, D10_CNT) AS 10
+   	  		    ,(D30_SUMSAL, D30_CNT) AS 30)
+   	  		    );   	  		   
+	
+-- UNPIVOT 절 사용시 자주 하는 실수(데이터 타입 불일치)
+	-- UNPIVOT 대상 컬럼들의 데이터 타입이 일지차히 않으면 에러가 발생한다.
+		-- 형 변환 함수 등을 사용하여 데이터 타입을 일치 시킨 후 UNPIVOT을 수행해야 한다.   	
+WITH W_EMP AS
+	(SELECT TO_CHAR(A.EMPNO) AS EMPNO 
+	       ,A.ENAME
+	       ,A.JOB
+	       ,TO_CHAR(A.MGR) AS MGR
+	       ,TO_CHAR(A.HIREDATE, 'YYYY-MM-DD') AS HIREDATE
+	       ,TO_CHAR(A.SAL) AS SAL
+	       ,TO_CHAR(A.COMM) AS COMM
+	       ,TO_CHAR(A.DEPTNO) AS DEPTNO
+	   FROM EMP A
+	  WHERE A.EMPNO = 7369
+	 ) 	
+	 SELECT *
+	  FROM W_EMP; 
+	 
+	 
+WITH W_EMP AS
+	(SELECT TO_CHAR(A.EMPNO) AS EMPNO 
+	       ,A.ENAME
+	       ,A.JOB
+	       ,TO_CHAR(A.MGR) AS MGR
+	       ,TO_CHAR(A.HIREDATE, 'YYYY-MM-DD') AS HIREDATE
+	       ,TO_CHAR(A.SAL) AS SAL
+	       ,TO_CHAR(A.COMM) AS COMM
+	       ,TO_CHAR(A.DEPTNO) AS DEPTNO
+	   FROM EMP A
+	  WHERE A.EMPNO = 7369
+	 ) 		 
+	SELECT *
+	  FROM W_EMP 
+   UNPIVOT (INFO_VAL
+   			FOR INFO_CLS
+   			 IN (EMPNO AS 'EMPNO'
+   			    ,ENAME AS 'ENAME'
+   			    ,JOB AS 'JOB'
+   			    ,MGR AS 'MGR'
+   			    ,HIREDATE AS 'HIREDATE'
+   			    ,SAL AS 'SAL'
+   			    ,COMM AS 'COMM'
+   			    ,DEPTNO AS 'DEPNO'
+   			    )
+   			);
+   	  		   
+-- 고객사 요건 재현    		  
+CREATE TABLE stage_table(
+    id INT PRIMARY KEY,
+    Stage VARCHAR2(20),
+    Stage1_Actual DATE,
+    Stage1_Plan DATE,
+    Stage2_Actual DATE,
+    Stage2_Plan DATE,
+    Stage3_Actual DATE,
+    Stage3_PLAN DATE    
+);
+
+INSERT INTO stage_table(id, stage, Stage1_Actual, Stage1_Plan, Stage2_Actual, Stage2_Plan, Stage3_Actual, Stage3_PLAN)
+VALUES(1
+       ,'Complete'
+       , TO_DATE('2023-05-01', 'yyyy-mm-dd')
+       , TO_DATE('2023-05-03', 'yyyy-mm-dd')
+       ,TO_DATE('2023-05-15', 'yyyy-mm-dd')
+       ,TO_DATE('2023-05-14', 'yyyy-mm-dd')
+       ,TO_DATE('2023-05-20', 'yyyy-mm-dd')
+       ,TO_DATE('2023-05-25', 'yyyy-mm-dd'));
+
+INSERT INTO stage_table(id, stage, Stage1_Actual, Stage1_Plan, Stage2_Actual, Stage2_Plan, Stage3_Actual, Stage3_PLAN)
+VALUES(2
+       ,'PVT'
+       , TO_DATE('2023-05-02', 'yyyy-mm-dd')
+       , TO_DATE('2023-05-05', 'yyyy-mm-dd')
+       ,TO_DATE('2023-05-10', 'yyyy-mm-dd')
+       ,TO_DATE('2023-05-20', 'yyyy-mm-dd')
+       ,NULL
+       ,TO_DATE('2023-05-30', 'yyyy-mm-dd'));
+      
+SELECT *
+ FROM stage_table;
+
+
+-- 1개 UNPIVOT 
+SELECT ID, Stage, End_Actual FROM 
+ (SELECT id, Stage1_Actual, Stage2_Actual FROM stage_table)
+UNPIVOT( End_Actual -- unpivot_clause
+         FOR Stage -- unpivot_for_clause
+         IN ( -- unpivot_in_clause
+             Stage1_Actual AS 'Stage1',
+              Stage2_Actual AS 'Stage2'
+    )
+);
+
+-- 2개 UNPIVOT
+SELECT ID, Stage, End_Actual, End_Plan
+ FROM (SELECT id, Stage1_Actual, Stage2_Actual, Stage3_Actual, Stage1_Plan, Stage2_Plan, Stage3_Plan FROM stage_table)
+UNPIVOT( (End_Actual, End_Plan) -- unpivot_clause
+         FOR Stage -- unpivot_for_clause
+         IN ( -- unpivot_in_clause
+             (Stage1_Actual, Stage1_Plan) AS 'Stage1',
+             (Stage2_Actual, Stage2_Plan) AS 'Stage2',
+             (Stage3_Actual, Stage3_Plan) AS 'Stage3'
+    )
+);  
+
+-- 2개 UNPIVOT + UNION ALL
+SELECT ID, Stage, End_Actual, End_Plan, 'Phase1' TB_NAME 
+ FROM (SELECT id
+             ,Stage1_Actual
+             ,Stage2_Actual
+             ,Stage3_Actual
+             ,Stage1_Plan
+             ,Stage2_Plan
+             ,Stage3_Plan FROM stage_table)
+UNPIVOT( (End_Actual, End_Plan) -- unpivot_clause
+         FOR Stage -- unpivot_for_clause
+         IN ( -- unpivot_in_clause
+             (Stage1_Actual, Stage1_Plan) AS 'Stage1',
+             (Stage2_Actual, Stage2_Plan) AS 'Stage2',
+             (Stage3_Actual, Stage3_Plan) AS 'Stage3'
+            )
+        )
+
+UNION ALL
+
+SELECT ID, Stage, End_Actual, End_Plan, 'Phase2' TB_NAME 
+ FROM (SELECT id, Stage1_Actual, Stage2_Actual, Stage3_Actual, Stage1_Plan, Stage2_Plan, Stage3_Plan FROM stage_table)
+UNPIVOT( (End_Actual, End_Plan) -- unpivot_clause
+         FOR Stage -- unpivot_for_clause
+         IN ( -- unpivot_in_clause
+             (Stage1_Actual, Stage1_Plan) AS 'Stage1',
+             (Stage2_Actual, Stage2_Plan) AS 'Stage2',
+             (Stage3_Actual, Stage3_Plan) AS 'Stage3'
+    )
+)
+; 
+
+-- 테이블 제거 
+-- DROP TABLE stage_table;
