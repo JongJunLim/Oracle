@@ -229,21 +229,4 @@ WITH W_PIVOT AS
    		   FOR DEPNO IN (D10_SUMSAL AS 10
    		                ,D20_SUMSAL AS 20
    		                ,D30_SUMSAL AS 30)
-   		   );                     
-
--- 다중 컬럼 UNPIVOT 예시 
-WITH W_PIVOT AS
-	(SELECT JOB, D10_SUMSAL, D10_CNT, D30_SUMSAL, D30_CNT
-	   FROM (SELECT a.job
-	   			   ,a.deptno
-	   			   ,a.sal
-	   		   FROM emp a ) a 
-	   PIVOT (SUM(a.sal) AS SUMSAL
-	         ,COUNT(*) AS CNT
-	    	FOR deptno
-	    	 IN (10 AS D10
-	    	    ,30 AS D30)
-	    	 )
-	)     		  
-   	SELECT *
-   	  FROM W_PIVOT; 
+   		   );
