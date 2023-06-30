@@ -178,28 +178,3 @@ WITH W_PIVOT AS
 	)
 	SELECT *
       FROM W_PIVOT;
-
-WITH W_PIVOT AS
-	(SELECT D10_SUMSAL, D20_SUMSAL, D30_SUMSAL
-	   FROM (SELECT a.deptno
-	   			   ,a.sal
-	   		   FROM emp a 
-	   		) a 
-	   PIVOT (SUM(a.sal) AS SUMSAL
-	    	FOR deptno
-	    	 IN (10 AS D10
-	    	 	,20 AS D20
-	    	 	,30 AS D30)
-	    	 )
-	)  
-	SELECT CASE WHEN b.lv = 1 THEN 10
-		        WHEN b.lv = 2 THEN 20
-		        WHEN b.lv = 3 THEN 30
-		    END AS DEPTNO
-	      ,CASE WHEN b.lv = 1 THEN a.D10_SUMSAL
-	            WHEN b.lv = 2 THEN a.D20_SUMSAL
-	            WHEN b.lv = 3 THEN a.D30_SUMSAL
-	        END AS SUMSAL
-      FROM W_PIVOT a
-          ,(SELECT LEVEL AS LV 
-      	      FROM DUAL CONNECT BY LEVEL <= 3 ) b;
