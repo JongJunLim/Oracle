@@ -203,30 +203,3 @@ WITH W_PIVOT AS
       FROM W_PIVOT a
           ,(SELECT LEVEL AS LV 
       	      FROM DUAL CONNECT BY LEVEL <= 3 ) b;
-	
-
--- UNPIVOT 절을 기존 행수 * IN 절에 지정한 컬럼 수만큼 행을 복제한다.
- 	-- 단, NULL 값은 결과에서 제외(EXCLUDE  NUL)된다.
-	-- UNPIVOT 절에 INCLUDE NULL 키워드를 기술하면 NULL 값도 결과에 포함된다.
-WITH W_PIVOT AS
-	(SELECT JOB, D10_SUMSAL, D20_SUMSAL, D30_SUMSAL
-	   FROM (SELECT a.job
-	   			   ,a.deptno
-	   			   ,a.sal
-	   		   FROM emp a ) a 
-	   PIVOT (SUM(a.sal) AS SUMSAL
-	    	FOR deptno
-	    	 IN (10 AS D10
-	    	    ,20 AS D20
-	    	    ,30 AS D30)
-	    	 )
-	)  
-
-	SELECT *
- 	  FROM W_PIVOT
-   UNPIVOT INCLUDE NULLS
-   		   (SUMSAL 
-   		   FOR DEPNO IN (D10_SUMSAL AS 10
-   		                ,D20_SUMSAL AS 20
-   		                ,D30_SUMSAL AS 30)
-   		   );
